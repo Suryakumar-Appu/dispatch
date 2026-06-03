@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispatch</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #c8c0b0;
+    font-family: 'Special Elite', monospace;
+    min-height: 100vh;
+    cursor: default;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  .page-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  .top-bar {
+    background: #2a2a2a;
+    color: #d4c89a;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    padding: 4px 10px;
+    letter-spacing: 0.05em;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 28px;
+    border-bottom: 2px solid #888;
+  }
+
+  .site-header {
+    border: 2px solid #444;
+    border-top: 4px solid #444;
+    background: #e8e0d0;
+    padding: 20px 24px 16px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .site-header::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; right: -6px;
+    width: 100%; height: 100%;
+    border: 2px solid #999;
+    z-index: -1;
+  }
+
+  .site-title {
+    font-family: 'VT323', monospace;
+    font-size: 52px;
+    color: #1a1a1a;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .site-sub {
+    font-size: 13px;
+    color: #555;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px dashed #999;
+    margin: 20px 0;
+  }
+
+  .section-label {
+    font-family: 'VT323', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .game-entry {
+    background: #ddd8cc;
+    border: 1px solid #bbb;
+    border-left: 4px solid #555;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+
+  .game-entry:hover {
+    background: #d0c8b8;
+    border-left-color: #222;
+  }
+
+  .game-entry:nth-child(1) { border-left-color: #3a6b3a; }
+  .game-entry:nth-child(2) { border-left-color: #8b6914; }
+  .game-entry:nth-child(3) { border-left-color: #4a5a7a; }
+  .game-entry:nth-child(4) { border-left-color: #4a7a8f; }
+  .game-entry:nth-child(5) { border-left-color: #8f4a4a; }
+
+  .game-entry:nth-child(1):hover { border-left-color: #1a3a1a; }
+  .game-entry:nth-child(2):hover { border-left-color: #5a3a00; }
+  .game-entry:nth-child(3):hover { border-left-color: #2a3a5a; }
+  .game-entry:nth-child(4):hover { border-left-color: #2a5a6f; }
+  .game-entry:nth-child(5):hover { border-left-color: #6f2a2a; }
+
+  .game-name {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: #1a1a1a;
+    line-height: 1;
+  }
+
+  .game-desc {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  .game-meta {
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: #555;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+
+  .author-note {
+    background: #f0ebe0;
+    border: 1px solid #ccc;
+    padding: 16px 18px;
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: #444;
+    line-height: 1.75;
+    font-style: italic;
+  }
+
+  .author-note .sig {
+    font-style: normal;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: #222;
+    display: block;
+    margin-top: 10px;
+  }
+
+  .footer {
+    margin-top: 40px;
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    border-top: 1px dashed #bbb;
+    padding-top: 16px;
+  }
+
+  .blink {
+    animation: blink 1.2s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span style="font-style: italic;">SA</span>
+  <span>built for mobile screens &nbsp;|&nbsp; 5 entries <span class="blink">_</span></span>
+</div>
+
+<div class="page-wrap">
+
+  <div class="site-header">
+    <div class="site-title">DISPATCH</div>
+    <div class="site-sub">short stories, told through games.</div>
+  </div>
+
+  <div class="section-label">// the stories</div>
+
+  <a class="game-entry" href="https://suryakumar-appu.github.io/hollow" target="_blank" rel="noopener">
+    <div class="game-meta">~ 3 min</div>
+    <div class="game-name">HOLLOW</div>
+    <div class="game-desc">A game about choice paralysis and the illusion of choice.</div>
+  </a>
+
+  <a class="game-entry" href="https://suryakumar-appu.github.io/r1357" target="_blank" rel="noopener">
+    <div class="game-meta">~ 2 min</div>
+    <div class="game-name">R 1357</div>
+    <div class="game-desc">A game about being overwhelmed.</div>
+  </a>
+
+  <a class="game-entry" href="https://suryakumar-appu.github.io/fog" target="_blank" rel="noopener">
+    <div class="game-meta">~ 3 min</div>
+    <div class="game-name">FOG</div>
+    <div class="game-desc">A game about brain fog.</div>
+  </a>
+
+  <a class="game-entry" href="https://suryakumar-appu.github.io/the-broadcast" target="_blank" rel="noopener">
+    <div class="game-meta">~ 2 min</div>
+    <div class="game-name">THE BROADCAST</div>
+    <div class="game-desc">A game about being almost there but not close enough.</div>
+  </a>
+
+  <a class="game-entry" href="https://suryakumar-appu.github.io/feed" target="_blank" rel="noopener">
+    <div class="game-meta">~ 90 sec</div>
+    <div class="game-name">FEED</div>
+    <div class="game-desc">A game about how depression can sometimes feel like a blob that consumes you.</div>
+  </a>
+
+  <hr class="divider">
+
+  <div class="author-note">
+    These are short stories about things that don't have easy names. Each one ends with a note from me. You don't have to read them but I hope you do. I hope you find some solace in them as I did while building them.
+    <span class="sig">Take care :)) &nbsp; — SA</span>
+  </div>
+
+  <div class="footer">
+    suryakumar appu &nbsp;|&nbsp; 2024 – 2026 <span class="blink">_</span>
+  </div>
+
+</div>
+</body>
+</html>
